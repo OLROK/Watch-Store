@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TINTON | Watch Store</title>
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <style>
+        /* --- Base Styles & Reset --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0d0d0d; color: #ffffff; line-height: 1.6; overflow-x: hidden; }
+        a { text-decoration: none; color: #fff; }
+
+        /* --- Top Bar --- */
+        .top-bar { font-size: 0.8rem; display: flex; justify-content: space-between; padding: 10px 5%; background-color: #000; color: #aaa; }
+
+        /* --- Navigation --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
+        .logo { font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 30px; font-size: 0.9rem; text-transform: uppercase; }
+        .nav-links a:hover { color: #a0b298; }
+        .nav-icons { display: flex; gap: 20px; align-items: center; }
+        .nav-icons a { display: flex; align-items: center; gap: 5px; font-size: 1.1rem; cursor: pointer; }
+
+        /* =========================================
+           NEW: ANIMATED EXPANDING SEARCH BAR
+           ========================================= */
+        .animated-search {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border-radius: 30px;
+            transition: background 0.4s ease;
+        }
+        .animated-search.active {
+            background: rgba(255, 255, 255, 0.15); /* Subtle highlight when open */
+        }
+        .animated-search-input {
+            width: 0; /* Hidden by default */
+            border: none;
+            background: transparent;
+            color: #fff;
+            outline: none;
+            padding: 0;
+            font-size: 0.9rem;
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), padding 0.4s ease, opacity 0.4s ease;
+            opacity: 0;
+        }
+        .animated-search-input.active {
+            width: 180px; /* Slides open to this width */
+            padding: 5px 10px 5px 15px;
+            opacity: 1;
+        }
+        .animated-search-input::placeholder { color: #aaa; }
+        .animated-search a { padding: 5px; border-radius: 50%; }
+
+        /* --- Buttons --- */
+        .btn { display: inline-block; background-color: #fff; color: #000; padding: 10px 24px; text-transform: uppercase; font-size: 0.8rem; font-weight: bold; transition: 0.3s ease; cursor: pointer; border: none; width: 100%; text-align: center; }
+        .btn:hover { background-color: #a0b298; color: #fff; }
+
+        /* --- Hero Section --- */
+        .hero { height: 80vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=1600') center/cover; display: flex; align-items: center; padding: 0 10%; }
+        .hero-content { max-width: 500px; }
+        .hero-content h4 { color: #a0b298; font-weight: normal; margin-bottom: 10px; letter-spacing: 1px; }
+        .hero-content h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 30px; font-weight: 300; }
+
+        /* --- PRODUCT BENTO GRID STYLES --- */
+        .product-bento { display: flex; gap: 20px; padding: 40px 5%; background-color: #0d0d0d; }
+        .bento-left { flex: 1; min-width: 25%; }
+        .bento-right { flex: 3; display: flex; flex-direction: column; gap: 20px; }
+        .bento-row { display: flex; gap: 20px; flex: 1; }
+        .bento-box { position: relative; background-color: #1a1a1a; background-size: cover; background-position: center; padding: 30px; display: flex; flex-direction: column; justify-content: flex-start; transition: transform 0.3s ease; overflow: hidden; border: 1px solid #222; }
+        .bento-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.2)); z-index: 1; transition: background 0.3s ease; }
+        .bento-box:hover::before { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.1)); }
+        .bento-box:hover { transform: translateY(-5px); }
+        .bento-content { position: relative; z-index: 2; }
+        .bento-subtitle { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; display: block; font-weight: bold; }
+        .bento-content h2 { font-size: 1.4rem; font-weight: 300; margin-bottom: 15px; line-height: 1.2; }
+        .btn-small { padding: 8px 16px; font-size: 0.7rem; width: auto; display: inline-block; }
+        .tall-box { height: 100%; min-height: 400px; }
+        .wide-box { flex: 2; }
+        .small-box { flex: 1; }
+        .half-box { flex: 1; min-height: 250px; }
+
+        /* Temporary High-Quality Placeholder Images */
+        .box-1 { background-image: url('https://images.unsplash.com/photo-1622434641406-a158123450f9?auto=format&fit=crop&q=80&w=600'); }
+        .box-2 { background-image: url('https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=800'); }
+        .box-3 { background-image: url('https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&q=80&w=400'); }
+        .box-4 { background-image: url('https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&q=80&w=600'); }
+        .box-5 { background-image: url('https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=600'); }
+
+        /* --- Features Section --- */
+        .features { display: flex; justify-content: space-around; padding: 60px 5%; background-color: #111; text-align: center; border-bottom: 1px solid #222; }
+        .feature-item h3 { font-size: 1rem; margin: 10px 0 5px; }
+        .feature-item p { font-size: 0.8rem; color: #888; }
+        .feature-icon ion-icon { font-size: 2.5rem; color: #a0b298; }
+
+        /* --- Collections Section --- */
+        .collections { padding: 80px 5%; text-align: center; }
+        .section-title { margin-bottom: 50px; }
+        .section-title h4 { color: #a0b298; font-weight: normal; font-size: 0.9rem; letter-spacing: 2px; }
+        .section-title h2 { font-size: 2rem; font-weight: 300; }
+        .collection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .collection-card { background-color: #1a1a1a; padding: 40px 20px; transition: transform 0.3s ease; cursor: pointer; }
+        .collection-card:hover { transform: translateY(-10px); }
+        .collection-card img { width: 80%; height: auto; margin-bottom: 20px; }
+
+        /* --- Bottom Banner --- */
+        .bottom-banner { height: 60vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1600') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .bottom-banner h1 { font-size: 3rem; font-weight: 300; margin: 20px 0; }
+
+        /* --- MODAL STYLES (Products) --- */
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1a1a1a; padding: 40px; width: 90%; max-width: 1000px; border-radius: 2px; position: relative; color: #fff; border: 1px solid #333; max-height: 90vh; overflow-y: auto; }
+        .close-btn { position: absolute; top: 15px; right: 25px; color: #aaa; font-size: 35px; font-weight: 300; cursor: pointer; transition: 0.3s ease; }
+        .close-btn:hover { color: #a0b298; }
+        .modal-products { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .modal-product-card { background-color: #0d0d0d; padding: 20px; text-align: center; border: 1px solid #222; }
+        .modal-product-card img { width: 100%; height: 200px; object-fit: cover; margin-bottom: 15px; }
+        .modal-product-card h4 { font-size: 1.1rem; margin-bottom: 5px; }
+        .modal-product-card p { font-size: 0.85rem; color: #888; margin-bottom: 10px; }
+        .modal-product-card .price { color: #a0b298; font-size: 1.2rem; margin-bottom: 15px; }
+
+        /* --- CART DRAWER STYLES --- */
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1000; display: none; backdrop-filter: blur(2px); }
+        .cart-drawer { position: fixed; top: 0; right: -450px; width: 400px; max-width: 100%; height: 100vh; background-color: #111; z-index: 1001; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-left: 1px solid #333; }
+        .cart-drawer.open { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #222; }
+        .cart-header h2 { font-weight: 300; font-size: 1.5rem; }
+        .cart-items { flex-grow: 1; padding: 20px; overflow-y: auto; }
+        .cart-item { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+        .cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; }
+        .cart-item-details h4 { font-size: 1rem; margin-bottom: 5px; }
+        .cart-item-details p { color: #a0b298; font-weight: bold; }
+        .cart-item-remove { color: #888; font-size: 0.8rem; cursor: pointer; text-decoration: underline; margin-top: 5px; display: inline-block; }
+        .cart-item-remove:hover { color: #ff4d4d; }
+        .cart-footer { padding: 20px; background-color: #0d0d0d; border-top: 1px solid #222; }
+        .cart-total { display: flex; justify-content: space-between; font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; }
+        .payment-methods { text-align: center; margin-top: 15px; color: #888; font-size: 0.8rem; }
+        .payment-icons { display: flex; justify-content: center; gap: 10px; margin-top: 5px; font-size: 1.5rem; color: #fff; }
+
+        /* --- GLASSMORPHISM LOGIN MODAL STYLES --- */
+        .glass-modal { display: none; position: fixed; z-index: 1005; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3); justify-content: center; align-items: center; }
+        .glass-modal-content { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 50px 40px; width: 90%; max-width: 450px; position: relative; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); color: #fff; }
+        .glass-modal-content h2 { font-size: 1.8rem; font-weight: 400; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase; }
+        .glass-input { width: 100%; padding: 15px 25px; margin-bottom: 20px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; color: #fff; font-size: 1rem; outline: none; transition: 0.3s ease; }
+        .glass-input::placeholder { color: rgba(255, 255, 255, 0.7); }
+        .glass-input:focus { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.5); }
+        .glass-login-btn { width: 100%; padding: 15px 25px; background-color: #723246; color: #fff; border: none; border-radius: 30px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s ease; margin-bottom: 25px; }
+        .glass-login-btn:hover { background-color: #8c3e56; }
+        .helper-links { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 25px; }
+        .helper-links a { color: #fff; transition: 0.3s ease; }
+        .helper-links a:hover { color: #a0b298; }
+        .login-divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin-bottom: 25px; }
+        .social-text { font-size: 0.85rem; margin-bottom: 15px; text-transform: uppercase; }
+        .social-icons { display: flex; justify-content: center; gap: 20px; }
+        .social-icons a { display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; transition: transform 0.3s ease; }
+        .social-icons a:hover { transform: scale(1.1); }
+        .icon-google { background-color: #fff; color: #DB4437; }
+        .icon-fb { background-color: #1877F2; color: #fff; }
+        .close-glass { position: absolute; top: 15px; right: 25px; color: #aaa; font-size: 35px; font-weight: 300; cursor: pointer; transition: 0.3s ease; }
+        .close-glass:hover { color: #fff; }
+
+        /* --- RESPONSIVE CSS --- */
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+        @media screen and (max-width: 900px) { 
+            .hero h1 { font-size: 2.5rem; } 
+            .collection-grid { grid-template-columns: repeat(2, 1fr); }
+            .product-bento { flex-direction: column; }
+            .bento-row { flex-direction: column; }
+            .tall-box { min-height: 300px; }
+        }
+        @media screen and (max-width: 768px) {
+            .top-bar { flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+            .menu-toggle { display: block; }
+            .hide-mobile { display: none; }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: rgba(13, 13, 13, 0.98); text-align: center; padding: 20px 0; border-bottom: 1px solid #333; }
+            .nav-links.active { display: flex; }
+            .nav-links a { padding: 15px 0; width: 100%; }
+            .features { flex-direction: column; gap: 30px; }
+            .collection-grid { grid-template-columns: 1fr; }
+            .hero, .bottom-banner { padding: 0 5%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div>Call Us: +123 456 7890</div>
+        <div>10% off your next order</div>
+        <div>English | USD</div>
+    </div>
+
+    <header>
+        <div class="logo">TINTON</div>
+        <div class="menu-toggle" id="mobile-menu">☰</div>
+        <nav class="nav-links" id="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Product</a>
+            <a href="#">Collection</a>
+            <a href="#">Blog</a>
+            <a href="#">Pages</a>
+        </nav>
+        <div class="nav-icons">
+            
+            <div class="animated-search" id="animated-search-container">
+                <input type="text" class="animated-search-input" id="animated-search-input" placeholder="Search watches...">
+                <a href="#" id="search-icon"><ion-icon name="search-outline"></ion-icon> <span class="hide-mobile" id="search-text">Search</span></a>
+            </div>
+
+            <a href="#" id="login-icon"><ion-icon name="person-outline"></ion-icon> <span class="hide-mobile">Login</span></a>
+            <a href="#" id="cart-icon"><ion-icon name="cart-outline"></ion-icon> <span class="hide-mobile" id="cart-count">Cart (0)</span></a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h4>EXTRA -10% OFF</h4>
+            <h1>GET YOUR NEW<br>EDITION WATCH</h1>
+            <a href="#" class="btn">Shop Now</a>
+        </div>
+    </section>
+
+    <section class="product-bento">
+        <div class="bento-left">
+            <div class="bento-box tall-box box-1">
+                <div class="bento-content">
+                    <span class="bento-subtitle" style="color: #bfa87a;">LIMITED EDITION</span>
+                    <h2>THE HOTTEST WRIST<br>WATCH</h2>
+                    <a href="#" class="btn btn-small">Shop Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="bento-right">
+            <div class="bento-row">
+                <div class="bento-box wide-box box-2">
+                    <div class="bento-content">
+                        <span class="bento-subtitle" style="color: #bfa87a;">CLASSIC WATCH</span>
+                        <h2>WORLD BRANDED<br>WATCH COLLECTION</h2>
+                        <a href="#" class="btn btn-small">Shop Now</a>
+                    </div>
+                </div>
+                <div class="bento-box small-box box-3">
+                    <div class="bento-content">
+                        <span class="bento-subtitle" style="color: #a0b298;">QUALITY SMART WATCH</span>
+                        <h2>GET SAVE UPTO<br>20% OFF</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="bento-row">
+                <div class="bento-box half-box box-4">
+                    <div class="bento-content">
+                        <span class="bento-subtitle" style="color: #a0b298;">WATCH COLLECTIONS</span>
+                        <h2>CASUAL STAINLESS<br>STEEL WATCH</h2>
+                    </div>
+                </div>
+                <div class="bento-box half-box box-5">
+                    <div class="bento-content">
+                        <span class="bento-subtitle" style="color: #a0b298;">SEASON SALE</span>
+                        <h2>NEW LUXURY<br>WATCH COLLECTION</h2>
+                        <a href="#" class="btn btn-small">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature-item">
+            <div class="feature-icon"><ion-icon name="airplane-outline"></ion-icon></div>
+            <h3>FREE SHIPPING</h3><p>Free shipping for orders over $100</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><ion-icon name="gift-outline"></ion-icon></div>
+            <h3>BIG SAVING</h3><p>Big saving on first order over $50</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><ion-icon name="headset-outline"></ion-icon></div>
+            <h3>24/7 SUPPORT</h3><p>24 hours a day, 7 days a week</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><ion-icon name="card-outline"></ion-icon></div>
+            <h3>FLEXIBLE PAYMENT</h3><p>Pay with multiple credit cards</p>
+        </div>
+    </section>
+
+    <section class="collections">
+        <div class="section-title">
+            <h4>WATCH COLLECTION</h4>
+            <h2>SHOP BY COLLECTION</h2>
+        </div>
+        <div class="collection-grid">
+            <div class="collection-card" id="womens-collection-card">
+                <img src="https://images.unsplash.com/photo-1585123334904-845d60e97b29?auto=format&fit=crop&q=80&w=400" alt="Women's Watch">
+                <h3>WOMEN'S COLLECTION</h3>
+            </div>
+            <div class="collection-card" id="smart-watch-card">
+                <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=400" alt="Smart Watch">
+                <h3>SMART WATCH</h3>
+            </div>
+            <div class="collection-card" id="mens-collection-card">
+                <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=400" alt="Men's Watch">
+                <h3>MEN'S COLLECTION</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="bottom-banner">
+        <div class="section-title">
+            <h4>EXTRA -10% OFF</h4>
+            <h1 style="color: white;">WORLD BRANDED<br>WATCH COLLECTIONS</h1>
+            <a href="#" class="btn">Shop Now</a>
+        </div>
+    </section>
+
+    <div id="womens-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-womens-modal">&times;</span>
+            <h2 style="margin-bottom: 20px; font-weight: 300;">WOMEN'S COLLECTION</h2>
+            <div class="modal-products">
+                <div class="modal-product-card">
+                    <img src="https://images.unsplash.com/photo-1585123334904-845d60e97b29?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                    <h4>Rose Gold Elegance</h4><p>Type: Automatic | Size: 32mm</p><p class="price">$250.00</p>
+                    <button class="btn add-to-cart-btn" data-name="Rose Gold Elegance" data-price="250.00" data-img="https://images.unsplash.com/photo-1585123334904-845d60e97b29?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                </div>
+                <div class="modal-product-card">
+                    <img src="https://images.unsplash.com/photo-1619946794135-5bc917a27793?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                    <h4>Silver Mesh Classic</h4><p>Type: Quartz | Size: 28mm</p><p class="price">$180.00</p>
+                    <button class="btn add-to-cart-btn" data-name="Silver Mesh Classic" data-price="180.00" data-img="https://images.unsplash.com/photo-1619946794135-5bc917a27793?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                </div>
+                <div class="modal-product-card">
+                    <img src="https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                    <h4>Vintage Leather</h4><p>Type: Mechanical | Size: 36mm</p><p class="price">$310.00</p>
+                    <button class="btn add-to-cart-btn" data-name="Vintage Leather" data-price="310.00" data-img="https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                </div>
+                <div class="modal-product-card">
+                    <img src="https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                    <h4>Diamond Bezel</h4><p>Type: Quartz | Size: 30mm</p><p class="price">$450.00</p>
+                    <button class="btn add-to-cart-btn" data-name="Diamond Bezel" data-price="450.00" data-img="https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                </div>
+                <div class="modal-product-card">
+                    <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                    <h4>Minimalist White</h4><p>Type: Quartz | Size: 34mm</p><p class="price">$150.00</p>
+                    <button class="btn add-to-cart-btn" data-name="Minimalist White" data-price="150.00" data-img="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                </div>
+                <div class="modal-product-card">
+                    <img src="https://images.unsplash.com/photo-1622434641406-a158123450f9?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                    <h4>Two-Tone Classic</h4><p>Type: Automatic | Size: 32mm</p><p class="price">$290.00</p>
+                    <button class="btn add-to-cart-btn" data-name="Two-Tone Classic" data-price="290.00" data-img="https://images.unsplash.com/photo-1622434641406-a158123450f9?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="smart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-smart-modal">&times;</span>
+            <h2 style="margin-bottom: 20px; font-weight: 300;">SMART WATCHES</h2>
+            <div class="modal-products">
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Fitness Pro Max</h4><p>Type: Digital | Size: 42mm</p><p class="price">$299.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Fitness Pro Max" data-price="299.00" data-img="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Tech Elegance</h4><p>Type: Digital | Size: 40mm</p><p class="price">$349.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Tech Elegance" data-price="349.00" data-img="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1551816230-ef5ce4636b0c?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Premium Titanium</h4><p>Type: Digital | Size: 45mm</p><p class="price">$499.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Premium Titanium" data-price="499.00" data-img="https://images.unsplash.com/photo-1551816230-ef5ce4636b0c?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Slim Tracker</h4><p>Type: Band | Size: 38mm</p><p class="price">$99.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Slim Tracker" data-price="99.00" data-img="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1617043786394-f977fa12eddf?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Hybrid Classic</h4><p>Type: Hybrid | Size: 42mm</p><p class="price">$250.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Hybrid Classic" data-price="250.00" data-img="https://images.unsplash.com/photo-1617043786394-f977fa12eddf?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Sport Active</h4><p>Type: Digital | Size: 44mm</p><p class="price">$199.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Sport Active" data-price="199.00" data-img="https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mens-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-mens-modal">&times;</span>
+            <h2 style="margin-bottom: 20px; font-weight: 300;">MEN'S COLLECTION</h2>
+            <div class="modal-products">
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Chronograph Black</h4><p>Type: Chrono | Size: 42mm</p><p class="price">$320.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Chronograph Black" data-price="320.00" data-img="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Dive Master Pro</h4><p>Type: Automatic | Size: 44mm</p><p class="price">$550.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Dive Master Pro" data-price="550.00" data-img="https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Dress Classic</h4><p>Type: Quartz | Size: 38mm</p><p class="price">$210.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Dress Classic" data-price="210.00" data-img="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Aviation Pilot</h4><p>Type: Mechanical | Size: 46mm</p><p class="price">$480.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Aviation Pilot" data-price="480.00" data-img="https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Minimalist Matte</h4><p>Type: Quartz | Size: 40mm</p><p class="price">$175.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Minimalist Matte" data-price="175.00" data-img="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+                 <div class="modal-product-card">
+                     <img src="https://images.unsplash.com/photo-1594534475808-b18fc33b045e?auto=format&fit=crop&q=80&w=200" alt="Watch">
+                     <h4>Gold Executive</h4><p>Type: Automatic | Size: 41mm</p><p class="price">$600.00</p>
+                     <button class="btn add-to-cart-btn" data-name="Gold Executive" data-price="600.00" data-img="https://images.unsplash.com/photo-1594534475808-b18fc33b045e?auto=format&fit=crop&q=80&w=200">Add to Cart</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <span class="close-btn" id="close-cart-drawer">&times;</span>
+        </div>
+        
+        <div class="cart-items" id="cart-items-container">
+            <p style="text-align: center; color: #888; margin-top: 20px;">Your cart is currently empty.</p>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Subtotal:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="btn" style="background-color: #a0b298; color: #fff;">Proceed to Checkout</button>
+            
+            <div class="payment-methods">
+                <p>Secure Checkout Guaranteed</p>
+                <div class="payment-icons">
+                    <ion-icon name="card-outline"></ion-icon>
+                    <ion-icon name="logo-paypal"></ion-icon>
+                    <ion-icon name="logo-apple"></ion-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="glass-login-modal" class="glass-modal">
+        <div class="glass-modal-content">
+            <span class="close-glass" id="close-login-modal">&times;</span>
+            <h2>Welcome To Tinton</h2>
+            
+            <form action="#" method="POST">
+                <input type="email" class="glass-input" placeholder="Email" required>
+                <input type="password" class="glass-input" placeholder="Password" required>
+                <button type="submit" class="glass-login-btn">Login</button>
+            </form>
+
+            <div class="helper-links">
+                <a href="#">Forget Password?</a>
+                <a href="#">Sign Up</a>
+            </div>
+
+            <div class="login-divider"></div>
+
+            <div class="social-text">Or Login With</div>
+            <div class="social-icons">
+                <a href="#" class="icon-google"><ion-icon name="logo-google"></ion-icon></a>
+                <a href="#" class="icon-fb"><ion-icon name="logo-facebook"></ion-icon></a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

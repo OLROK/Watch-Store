@@ -1,0 +1,78 @@
+/* --- RESPONSIVE CSS --- */
+        
+        /* Hide the hamburger menu on desktop */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .collection-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            /* Top Bar & Header Adjustments */
+            .top-bar {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+                text-align: center;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+
+            .hide-mobile {
+                display: none; /* Hide text next to icons on small screens */
+            }
+
+            /* Mobile Navigation Styling */
+            .nav-links {
+                display: none; /* Hidden by default */
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: rgba(13, 13, 13, 0.98);
+                text-align: center;
+                padding: 20px 0;
+                border-bottom: 1px solid #333;
+            }
+
+            .nav-links.active {
+                display: flex; /* Shown when toggled by JS */
+            }
+
+            .nav-links a {
+                padding: 15px 0;
+                width: 100%;
+            }
+
+            /* Stack sections vertically */
+            .features {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .collection-grid {
+                grid-template-columns: 1fr; /* 1 column on mobile */
+            }
+
+            .hero, .bottom-banner {
+                padding: 0 5%;
+                text-align: center;
+            }
+
+            .hero-content {
+                margin: 0 auto;
+            }
+        }

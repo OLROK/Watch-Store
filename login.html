@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TINTON Watch Store</title>
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <style>
+        /* --- Base Styles --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0d0d0d; color: #ffffff; line-height: 1.6; }
+        a { text-decoration: none; color: #fff; }
+
+        /* --- Top Bar & Navigation (Same as your main site) --- */
+        .top-bar { font-size: 0.8rem; display: flex; justify-content: space-between; padding: 10px 5%; background-color: #000; color: #aaa; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
+        .logo { font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 30px; font-size: 0.9rem; text-transform: uppercase; }
+        .nav-links a:hover { color: #a0b298; }
+        .nav-icons { display: flex; gap: 20px; }
+        .nav-icons a { display: flex; align-items: center; gap: 5px; font-size: 1.1rem; cursor: pointer; }
+
+        /* --- GLASSMORPHISM LOGIN SECTION --- */
+        .login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            padding: 40px 5%;
+            /* Using a high-end watch background to match your store theme */
+            background: url('https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=1600') center/cover no-repeat;
+            position: relative;
+        }
+
+        /* Adds a subtle dark tint to the background image so the glass pops */
+        .login-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* The Frosted Glass Box */
+        .glass-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px); /* Creates the blur effect behind the box */
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-container h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Glass Input Fields */
+        .glass-input {
+            width: 100%;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px; /* Pill shape */
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        .glass-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Burgundy Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 15px 25px;
+            background-color: #723246; /* Burgundy color from your image */
+            color: #fff;
+            border: none;
+            border-radius: 30px; /* Pill shape */
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        .login-btn:hover {
+            background-color: #8c3e56;
+        }
+
+        /* Forget Password / Sign Up Links */
+        .helper-links {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+        }
+
+        .helper-links a {
+            color: #fff;
+            transition: 0.3s ease;
+        }
+
+        .helper-links a:hover {
+            color: #a0b298;
+        }
+
+        /* Divider Line */
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin-bottom: 25px;
+        }
+
+        /* Social Login */
+        .social-text {
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-icons a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            transform: scale(1.1);
+        }
+
+        /* Custom Social Icon Colors */
+        .icon-google {
+            background-color: #fff;
+            color: #DB4437; /* Google Red */
+        }
+
+        .icon-fb {
+            background-color: #1877F2; /* Facebook Blue */
+            color: #fff;
+        }
+
+        /* --- RESPONSIVE --- */
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+        @media screen and (max-width: 768px) {
+            .top-bar { flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+            .menu-toggle { display: block; }
+            .hide-mobile { display: none; }
+            .nav-links { display: none; }
+            .glass-container { padding: 40px 25px; width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div>Need help? Call Us: +123 456 7890</div>
+        <div>10% off your next order, use code: TINTON10</div>
+        <div>English | USD</div>
+    </div>
+
+    <header>
+        <div class="logo">TINTON</div>
+        <div class="menu-toggle" id="mobile-menu">☰</div>
+        <nav class="nav-links" id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#">Product</a>
+            <a href="#">Collection</a>
+            <a href="#">Blog</a>
+            <a href="#">Pages</a>
+        </nav>
+        <div class="nav-icons">
+            <a href="#"><ion-icon name="search-outline"></ion-icon> <span class="hide-mobile">Search</span></a>
+            <a href="login.html"><ion-icon name="person-outline"></ion-icon> <span class="hide-mobile">Login</span></a>
+            <a href="index.html"><ion-icon name="cart-outline"></ion-icon> <span class="hide-mobile">Cart</span></a>
+        </div>
+    </header>
+
+    <section class="login-section">
+        <div class="glass-container">
+            <h2>Welcome To Tinton</h2>
+            
+            <form action="#" method="POST">
+                <input type="email" class="glass-input" placeholder="Email" required>
+                <input type="password" class="glass-input" placeholder="Password" required>
+                
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="helper-links">
+                <a href="#">Forget Password ?</a>
+                <a href="register.html">Sign Up</a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="social-text">Or Login With</div>
+            <div class="social-icons">
+                <a href="#" class="icon-google"><ion-icon name="logo-google"></ion-icon></a>
+                <a href="#" class="icon-fb"><ion-icon name="logo-facebook"></ion-icon></a>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
